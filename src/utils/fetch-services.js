@@ -68,6 +68,7 @@ const axiosPostData = async (url, formData) => {
       },
     })
     .then((res) => {
+      console.log(res)
       return res;
     })
     .catch((err) => {

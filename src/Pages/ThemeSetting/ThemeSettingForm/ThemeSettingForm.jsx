@@ -1,4 +1,4 @@
-import { CButton, CCol, CForm, CSpinner } from "@coreui/react";
+import { CButton, CCol, CForm, CSpinner, CFormLabel } from "@coreui/react";
 import { useFormik } from "formik";
 import React, { useEffect, useState } from "react";
 import { Card } from "react-bootstrap";
@@ -6,29 +6,49 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import FormInput from "../../../components/Common/FormComponents/FormInput"; // Import the FormInput component
 import FormInputWithIcon from "../../../components/Common/FormComponents/FormInputWithIcon";
-import { getThemeSettingById, updateThemeSetting } from "../themeSettingService";
+import { getThemeSettingById, updateThemeSetting, removeImage } from "../themeSettingService";
 import FormTextarea from "../../../components/Common/FormComponents/FormTextarea";
+import { useDropzone } from "react-dropzone";
+import "../themeSettingForm.css";
+import { Notify } from "../../../utils/notify";
 
 const validationSchemaForCreate = Yup.object({
   facebookLink: Yup.string().required("Facebook is required"),
-
 });
 
 const validationSchemaForUpdate = Yup.object({
   facebookLink: Yup.string().required("Facebook is required"),
+  twitterLink: Yup.string().required("Twitter is required"),
+  instagramLink: Yup.string().required("Instagram is required"),
+  telegramLink: Yup.string().required("Telegram is required"),
+  youtubeLink: Yup.string().required("Youtube is required"),
+  whatsappLink: Yup.string().required("Facebook is required"),
+  blogLink: Yup.string().required("Feed is required"),
+  footerMessage: Yup.string().required("Footer Message is required"),
+  news: Yup.string().required("News is required"),
+  supportNumber: Yup.string().required("Support number is required"),
+  forgotPasswordLink: Yup.string().required("Forgot password link is required"),
+  depositePopupNumber: Yup.string().required("Deposite popup number"),
 });
 
-export default function SuperAdminForm() {
+export default function ThemeSettingForm() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { _id } = JSON.parse(localStorage.getItem('user_info')) || {};
+  const userId = JSON.parse(localStorage.getItem('user_info'))._id || {};
   //const id = location.state ? location.state.id : null;
 
-  const editMode = !!_id;
-
+  const editMode = !!userId;
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState(null);
   const [serverMsg, setServerMsg] = useState(null);
+  const [imageFiles, setImageFiles] = useState([]);
+  const [themeUserSettingId, setThemeUserSettingId] = useState('');
+
+  const [welcomeMobileImageFile, setWelcomeMobileImageFile] = useState(null);
+  const [welcomeDesktopImageFile, setWelcomeDesktopImageFile] = useState(null);
+
+  const [welcomeMobileImageUrl, setWelcomeMobileImageUrl] = useState('');
+  const [welcomeDesktopImageUrl, setWelcomeDesktopImageUrl] = useState('');
 
   const user = {
     facebookLink: "",
@@ -46,19 +66,84 @@ export default function SuperAdminForm() {
     welcomeMessage: "",
   };
 
+  const handleImageUpload = (acceptedFiles) => {
+    //setImageFiles(acceptedFiles);
+
+    const newFiles = acceptedFiles.map(file => ({
+      file,
+      name: '',
+      url: URL.createObjectURL(file) // Generate URL for new image
+    }));
+
+    setImageFiles(prevImageFiles => [...prevImageFiles, ...newFiles]);
+    //setImageFiles((prevImageFiles) => [...prevImageFiles, ...acceptedFiles]);
+  };
+
+  const handleRemoveImage = async (indexToRemove, name) => {
+    console.log(name);
+    console.log(themeUserSettingId)
+    setImageFiles(imageFiles.filter((_, index) => index !== indexToRemove));
+    if (name !== '') {
+      // delete API call
+      let removeImageObj = {
+        '_id': themeUserSettingId,
+        'bannerImageName': name
+      }
+      let response = await removeImage(removeImageObj);
+    }
+  };
+
+  const handleSingleImageUpload = (event, fieldName) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const newImageUrl = URL.createObjectURL(file);
+    if (fieldName === 'welcomeMobileImage') {
+      setWelcomeMobileImageUrl(newImageUrl);
+      setWelcomeMobileImageFile(file)
+    } else if (fieldName === 'welcomeDesktopImage') {
+      setWelcomeDesktopImageUrl(newImageUrl);
+      setWelcomeDesktopImageFile(file)
+    }
+
+  };
+
+  const { getRootProps, getInputProps } = useDropzone({
+    accept: "image/*",
+    onDrop: handleImageUpload,
+  });
+
   const submitForm = async (values) => {
     setServerError(null);
     setLoading(true);
 
     try {
-      let response = null;
-      response = await updateThemeSetting({
-        userId: _id,
-        ...values,
+      const formData = new FormData(); // Create a new FormData object
+      formData.append("userId", userId);
+
+      // Append form values to FormData
+      for (const key in values) {
+        formData.append(key, values[key]);
+      }
+
+      // Append image files to FormData
+      imageFiles.forEach((fileObj, index) => {
+        formData.append(`bannerImages[${index}]`, fileObj.file);
       });
 
-      if (response.success) {
-        setServerMsg('Data Updated successfully!!');
+      if (welcomeMobileImageFile) {
+        formData.append("welcomeMobileImage", welcomeMobileImageFile);
+      }
+
+      if (welcomeDesktopImageFile) {
+        formData.append("welcomeDesktopImage", welcomeDesktopImageFile);
+      }
+
+      let response = await updateThemeSetting(formData);
+      if (response.data.success) {
+        Notify.success("Theme setting updated successfully.");
+        fetchAndUpdateFormData();
+        //setServerMsg('Data Updated successfully!!');
         //navigate("/dashboard/");
       } else {
         throw new Error(response.message);
@@ -70,6 +155,36 @@ export default function SuperAdminForm() {
     }
   };
 
+  const fetchAndUpdateFormData = async () => {
+    Promise.all([getThemeSettingById(userId)]).then((results) => {
+      const [fetchtedUser] = results;
+      if (fetchtedUser !== null) {
+        const result = fetchtedUser;
+        formik.setValues((prevValues) => ({
+          ...prevValues,
+          facebookLink: result.facebookLink || "",
+          twitterLink: result.twitterLink || "",
+          instagramLink: result.instagramLink || "",
+          telegramLink: result.telegramLink || "",
+          youtubeLink: result.youtubeLink || "",
+          whatsappLink: result.whatsappLink || "",
+          blogLink: result.blogLink || "",
+          footerMessage: result.footerMessage || "",
+          news: result.news || "",
+          supportNumber: result.supportNumber || "",
+          forgotPasswordLink: result.forgotPasswordLink || "",
+          depositePopupNumber: result.depositePopupNumber || "",
+          welcomeMessage: result.welcomeMessage || "",
+        }));
+
+        setImageFiles(fetchtedUser.bannerImages);
+        setThemeUserSettingId(result._id)
+        setWelcomeMobileImageUrl(fetchtedUser.welcomeMobileImage);
+        setWelcomeDesktopImageUrl(fetchtedUser.welcomeDesktopImage);
+      }
+    });
+  };
+
   const formik = useFormik({
     initialValues: user,
     validationSchema: editMode ? validationSchemaForUpdate : validationSchemaForCreate,
@@ -77,36 +192,9 @@ export default function SuperAdminForm() {
   });
 
   useEffect(() => {
-    const fetchData = async () => {
-      // !!! IMPORTANT NOTE: The order of the promises in the array must match the order of the results in the results array
-      Promise.all([getThemeSettingById(_id)]).then((results) => {
-        const [fetchtedUser] = results;
-
-        if (fetchtedUser !== null) {
-          const result = fetchtedUser;
-          formik.setValues((prevValues) => ({
-            ...prevValues,
-            facebookLink: result.facebookLink || "",
-            twitterLink: result.twitterLink || "",
-            instagramLink: result.instagramLink || "",
-            telegramLink: result.telegramLink || "",
-            youtubeLink: result.youtubeLink || "",
-            whatsappLink: result.whatsappLink || "",
-            blogLink: result.blogLink || "",
-            footerMessage: result.footerMessage || "",
-            news: result.news || "",
-            supportNumber: result.supportNumber || "",
-            forgotPasswordLink: result.forgotPasswordLink || "",
-            depositePopupNumber: result.depositePopupNumber || "",
-            welcomeMessage: result.welcomeMessage || "",
-          }));
-        }
-      });
-    };
-
-    fetchData();
+    fetchAndUpdateFormData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [_id]);
+  }, [userId]);
 
   const formTitle = "UPDATE THEME SETTING";
 
@@ -216,6 +304,80 @@ export default function SuperAdminForm() {
               width={4}
               icon="fa fa-feed"
             />
+
+            <CCol md='2'>
+              <CFormLabel htmlFor="">
+                Welcome Mobile Image
+              </CFormLabel>
+              <input
+                type="file"
+                accept="image/*"
+                className="form-control"
+                onChange={(event) => handleSingleImageUpload(event, 'welcomeMobileImage')}
+              />
+            </CCol>
+            <CCol md='2'>
+              {welcomeMobileImageUrl && (
+                <div className="image-preview">
+                  <img src={welcomeMobileImageUrl} alt="Welcome Mobile" />
+                </div>
+              )}
+            </CCol>
+
+            <CCol md='2'>
+              <CFormLabel htmlFor="">
+                Welcome Desktop Image
+              </CFormLabel>
+              <input
+                type="file"
+                accept="image/*"
+                className="form-control"
+                onChange={(event) => handleSingleImageUpload(event, 'welcomeDesktopImage')}
+              />
+            </CCol>
+            <CCol md='2'>
+              {welcomeDesktopImageUrl && (
+                <div className="image-preview">
+                  <img src={welcomeDesktopImageUrl} alt="Welcome Mobile" />
+                </div>
+              )}
+            </CCol>
+
+            <div className="mb-3">
+              <label>Upload Images</label>
+              <div {...getRootProps()} className="dropzone">
+                <input {...getInputProps()} /> {/* Use inputRef here */}
+                <p>Drag 'n' drop some files here, or click to select files</p>
+              </div>
+
+              <div className="image-preview-container mt-2">
+                {/* {imageFiles.map((file, index) => (
+                  <div key={index} className="image-preview">
+                    <img src={URL.createObjectURL(file)} alt={`Uploaded ${index + 1}`} />
+                    <div className="image-overlay">
+                      <button type="button" onClick={() => handleRemoveImage(index)}>
+                        &times;
+                      </button>
+                    </div>
+                  </div>
+                ))} */}
+
+                {imageFiles.map((fileObj, index) => (
+                  <div key={index} className="image-preview">
+                    <img src={fileObj.url} alt={`Uploaded ${index + 1}`} />
+                    <div className="image-overlay">
+                      <button type="button" onClick={() => handleRemoveImage(index, fileObj.name)}>
+                        &times;
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <small className="form-text text-muted" style={{ fontSize: '12px', color: '#999' }}>
+                Accepted formats: PNG, JPEG, GIF
+              </small>
+            </div>
+
 
             <div className="mt-4 mb-1">
               <hr />
