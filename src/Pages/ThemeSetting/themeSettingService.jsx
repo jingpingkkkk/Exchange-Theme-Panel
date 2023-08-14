@@ -1,4 +1,4 @@
-import { postData } from "../../utils/fetch-services";
+import { postData, axiosPostData } from "../../utils/fetch-services";
 
 export const getAllData = async (page, perPage, sortBy, direction, searchQuery, parentId) => {
   const result = await postData("users/getAllUsers", {
@@ -36,6 +36,11 @@ export const addData = async (request) => {
 };
 
 export const updateThemeSetting = async (request) => {
-  const result = await postData("themeSetting/updateThemeSetting", request);
+  const result = await axiosPostData("themeSetting/updateThemeSetting", request);
+  return result;
+};
+
+export const removeImage = async (request) => {
+  const result = await postData("themeSetting/deleteBanner", request);
   return result;
 };

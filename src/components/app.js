@@ -6,6 +6,8 @@ import Switcher from "../layouts/Switcher/Switcher";
 import RightSidebar from "../layouts/RightSidebar/RightSidebar";
 import * as Switcherdata from "../data/Switcher/Switcherdata";
 import { Outlet } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import TabToTop from "../layouts/TabToTop/TabToTop";
 
 export default function App() {
@@ -26,6 +28,7 @@ export default function App() {
                     Switcherdata.Horizontalmenudefultclose();
                   }}
                 >
+                  <ToastContainer />
                   <Outlet />
                 </div>
               </div>
