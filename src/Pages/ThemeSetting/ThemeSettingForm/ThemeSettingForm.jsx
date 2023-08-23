@@ -6,7 +6,11 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import FormInput from "../../../components/Common/FormComponents/FormInput"; // Import the FormInput component
 import FormInputWithIcon from "../../../components/Common/FormComponents/FormInputWithIcon";
-import { getThemeSettingById, updateThemeSetting, removeImage } from "../themeSettingService";
+import {
+  getThemeSettingById,
+  updateThemeSetting,
+  removeImage,
+} from "../themeSettingService";
 import FormTextarea from "../../../components/Common/FormComponents/FormTextarea";
 import { useDropzone } from "react-dropzone";
 import "../themeSettingForm.css";
@@ -34,7 +38,7 @@ const validationSchemaForUpdate = Yup.object({
 export default function ThemeSettingForm() {
   const navigate = useNavigate();
   const location = useLocation();
-  const userId = JSON.parse(localStorage.getItem('user_info'))._id || {};
+  const userId = JSON.parse(localStorage.getItem("user_info"))._id || {};
   //const id = location.state ? location.state.id : null;
 
   const editMode = !!userId;
@@ -42,13 +46,15 @@ export default function ThemeSettingForm() {
   const [serverError, setServerError] = useState(null);
   const [serverMsg, setServerMsg] = useState(null);
   const [imageFiles, setImageFiles] = useState([]);
-  const [themeUserSettingId, setThemeUserSettingId] = useState('');
+  const [themeUserSettingId, setThemeUserSettingId] = useState("");
 
   const [welcomeMobileImageFile, setWelcomeMobileImageFile] = useState(null);
   const [welcomeDesktopImageFile, setWelcomeDesktopImageFile] = useState(null);
+  const [logoImageFile, setLogoImageFile] = useState(null);
 
-  const [welcomeMobileImageUrl, setWelcomeMobileImageUrl] = useState('');
-  const [welcomeDesktopImageUrl, setWelcomeDesktopImageUrl] = useState('');
+  const [welcomeMobileImageUrl, setWelcomeMobileImageUrl] = useState("");
+  const [welcomeDesktopImageUrl, setWelcomeDesktopImageUrl] = useState("");
+  const [logoImageUrl, setLogoImageUrl] = useState("");
 
   const user = {
     facebookLink: "",
@@ -69,26 +75,26 @@ export default function ThemeSettingForm() {
   const handleImageUpload = (acceptedFiles) => {
     //setImageFiles(acceptedFiles);
 
-    const newFiles = acceptedFiles.map(file => ({
+    const newFiles = acceptedFiles.map((file) => ({
       file,
-      name: '',
-      url: URL.createObjectURL(file) // Generate URL for new image
+      name: "",
+      url: URL.createObjectURL(file), // Generate URL for new image
     }));
 
-    setImageFiles(prevImageFiles => [...prevImageFiles, ...newFiles]);
+    setImageFiles((prevImageFiles) => [...prevImageFiles, ...newFiles]);
     //setImageFiles((prevImageFiles) => [...prevImageFiles, ...acceptedFiles]);
   };
 
   const handleRemoveImage = async (indexToRemove, name) => {
     console.log(name);
-    console.log(themeUserSettingId)
+    console.log(themeUserSettingId);
     setImageFiles(imageFiles.filter((_, index) => index !== indexToRemove));
-    if (name !== '') {
+    if (name !== "") {
       // delete API call
       let removeImageObj = {
-        '_id': themeUserSettingId,
-        'bannerImageName': name
-      }
+        _id: themeUserSettingId,
+        bannerImageName: name,
+      };
       let response = await removeImage(removeImageObj);
     }
   };
@@ -98,14 +104,16 @@ export default function ThemeSettingForm() {
     if (!file) return;
 
     const newImageUrl = URL.createObjectURL(file);
-    if (fieldName === 'welcomeMobileImage') {
+    if (fieldName === "welcomeMobileImage") {
       setWelcomeMobileImageUrl(newImageUrl);
-      setWelcomeMobileImageFile(file)
-    } else if (fieldName === 'welcomeDesktopImage') {
+      setWelcomeMobileImageFile(file);
+    } else if (fieldName === "welcomeDesktopImage") {
       setWelcomeDesktopImageUrl(newImageUrl);
-      setWelcomeDesktopImageFile(file)
+      setWelcomeDesktopImageFile(file);
+    } else if (fieldName === "logo") {
+      setLogoImageUrl(newImageUrl);
+      setLogoImageFile(file);
     }
-
   };
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -139,6 +147,10 @@ export default function ThemeSettingForm() {
         formData.append("welcomeDesktopImage", welcomeDesktopImageFile);
       }
 
+      if (logoImageFile) {
+        formData.append("logo", logoImageFile);
+      }
+
       let response = await updateThemeSetting(formData);
       if (response.data.success) {
         Notify.success("Theme setting updated successfully.");
@@ -158,7 +170,9 @@ export default function ThemeSettingForm() {
   const fetchAndUpdateFormData = async () => {
     Promise.all([getThemeSettingById(userId)]).then((results) => {
       const [fetchtedUser] = results;
-      if (fetchtedUser !== null) {
+      console.log(fetchtedUser);
+      if (fetchtedUser.length > 0 && fetchtedUser !== null) {
+        console.log("inn");
         const result = fetchtedUser;
         formik.setValues((prevValues) => ({
           ...prevValues,
@@ -178,16 +192,19 @@ export default function ThemeSettingForm() {
         }));
 
         setImageFiles(fetchtedUser.bannerImages);
-        setThemeUserSettingId(result._id)
+        setThemeUserSettingId(result._id);
         setWelcomeMobileImageUrl(fetchtedUser.welcomeMobileImage);
         setWelcomeDesktopImageUrl(fetchtedUser.welcomeDesktopImage);
+        setLogoImageUrl(fetchtedUser.logo);
       }
     });
   };
 
   const formik = useFormik({
     initialValues: user,
-    validationSchema: editMode ? validationSchemaForUpdate : validationSchemaForCreate,
+    validationSchema: editMode
+      ? validationSchemaForUpdate
+      : validationSchemaForCreate,
     onSubmit: submitForm,
   });
 
@@ -210,7 +227,10 @@ export default function ThemeSettingForm() {
         </Card.Header>
 
         <Card.Body>
-          <CForm className="row g-3 needs-validation" onSubmit={formik.handleSubmit}>
+          <CForm
+            className="row g-3 needs-validation"
+            onSubmit={formik.handleSubmit}
+          >
             {serverError ? <p className="text-red">{serverError}</p> : null}
             {serverMsg ? <p className="text-green">{serverMsg}</p> : null}
 
@@ -247,7 +267,9 @@ export default function ThemeSettingForm() {
               value={formik.values.instagramLink}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              error={formik.touched.instagramLink && formik.errors.instagramLink}
+              error={
+                formik.touched.instagramLink && formik.errors.instagramLink
+              }
               isRequired={true}
               width={4}
               icon="fa fa-instagram"
@@ -305,18 +327,18 @@ export default function ThemeSettingForm() {
               icon="fa fa-feed"
             />
 
-            <CCol md='2'>
-              <CFormLabel htmlFor="">
-                Welcome Mobile Image
-              </CFormLabel>
+            <CCol md="2">
+              <CFormLabel htmlFor="">Welcome Mobile Image</CFormLabel>
               <input
                 type="file"
                 accept="image/*"
                 className="form-control"
-                onChange={(event) => handleSingleImageUpload(event, 'welcomeMobileImage')}
+                onChange={(event) =>
+                  handleSingleImageUpload(event, "welcomeMobileImage")
+                }
               />
             </CCol>
-            <CCol md='2'>
+            <CCol md="2">
               {welcomeMobileImageUrl && (
                 <div className="image-preview">
                   <img src={welcomeMobileImageUrl} alt="Welcome Mobile" />
@@ -324,21 +346,38 @@ export default function ThemeSettingForm() {
               )}
             </CCol>
 
-            <CCol md='2'>
-              <CFormLabel htmlFor="">
-                Welcome Desktop Image
-              </CFormLabel>
+            <CCol md="2">
+              <CFormLabel htmlFor="">Welcome Desktop Image</CFormLabel>
               <input
                 type="file"
                 accept="image/*"
                 className="form-control"
-                onChange={(event) => handleSingleImageUpload(event, 'welcomeDesktopImage')}
+                onChange={(event) =>
+                  handleSingleImageUpload(event, "welcomeDesktopImage")
+                }
               />
             </CCol>
-            <CCol md='2'>
+            <CCol md="2">
               {welcomeDesktopImageUrl && (
                 <div className="image-preview">
-                  <img src={welcomeDesktopImageUrl} alt="Welcome Mobile" />
+                  <img src={welcomeDesktopImageUrl} alt="Welcome Desktop" />
+                </div>
+              )}
+            </CCol>
+
+            <CCol md="2">
+              <CFormLabel htmlFor="">Logo</CFormLabel>
+              <input
+                type="file"
+                accept="image/*"
+                className="form-control"
+                onChange={(event) => handleSingleImageUpload(event, "logo")}
+              />
+            </CCol>
+            <CCol md="2">
+              {logoImageUrl && (
+                <div className="image-preview">
+                  <img src={logoImageUrl} alt="Logo" />
                 </div>
               )}
             </CCol>
@@ -351,33 +390,27 @@ export default function ThemeSettingForm() {
               </div>
 
               <div className="image-preview-container mt-2">
-                {/* {imageFiles.map((file, index) => (
-                  <div key={index} className="image-preview">
-                    <img src={URL.createObjectURL(file)} alt={`Uploaded ${index + 1}`} />
-                    <div className="image-overlay">
-                      <button type="button" onClick={() => handleRemoveImage(index)}>
-                        &times;
-                      </button>
-                    </div>
-                  </div>
-                ))} */}
-
                 {imageFiles.map((fileObj, index) => (
                   <div key={index} className="image-preview">
                     <img src={fileObj.url} alt={`Uploaded ${index + 1}`} />
                     <div className="image-overlay">
-                      <button type="button" onClick={() => handleRemoveImage(index, fileObj.name)}>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveImage(index, fileObj.name)}
+                      >
                         &times;
                       </button>
                     </div>
                   </div>
                 ))}
               </div>
-              <small className="form-text text-muted" style={{ fontSize: '12px', color: '#999' }}>
+              <small
+                className="form-text text-muted"
+                style={{ fontSize: "12px", color: "#999" }}
+              >
                 Accepted formats: PNG, JPEG, GIF
               </small>
             </div>
-
 
             <div className="mt-4 mb-1">
               <hr />
@@ -400,7 +433,9 @@ export default function ThemeSettingForm() {
               value={formik.values.footerMessage}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              error={formik.touched.footerMessage && formik.errors.footerMessage}
+              error={
+                formik.touched.footerMessage && formik.errors.footerMessage
+              }
               isRequired="true"
               width={6}
             />
@@ -423,7 +458,9 @@ export default function ThemeSettingForm() {
               value={formik.values.supportNumber}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              error={formik.touched.supportNumber && formik.errors.supportNumber}
+              error={
+                formik.touched.supportNumber && formik.errors.supportNumber
+              }
               isRequired="true"
               width={4}
             />
@@ -435,7 +472,10 @@ export default function ThemeSettingForm() {
               value={formik.values.forgotPasswordLink}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              error={formik.touched.forgotPasswordLink && formik.errors.forgotPasswordLink}
+              error={
+                formik.touched.forgotPasswordLink &&
+                formik.errors.forgotPasswordLink
+              }
               isRequired="true"
               width={4}
             />
@@ -447,7 +487,10 @@ export default function ThemeSettingForm() {
               value={formik.values.depositePopupNumber}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              error={formik.touched.depositePopupNumber && formik.errors.depositePopupNumber}
+              error={
+                formik.touched.depositePopupNumber &&
+                formik.errors.depositePopupNumber
+              }
               isRequired="true"
               width={4}
             />
@@ -455,7 +498,13 @@ export default function ThemeSettingForm() {
             <CCol xs={12} className="pt-3">
               <div className="d-grid gap-2 d-md-block">
                 <CButton color="primary" type="submit" className="me-md-3">
-                  {loading ? <CSpinner size="sm" /> : editMode ? "Update" : "Create"}
+                  {loading ? (
+                    <CSpinner size="sm" />
+                  ) : editMode ? (
+                    "Update"
+                  ) : (
+                    "Create"
+                  )}
                 </CButton>
               </div>
             </CCol>
