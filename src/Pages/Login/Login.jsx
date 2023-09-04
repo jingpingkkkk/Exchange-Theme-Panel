@@ -27,7 +27,16 @@ export default function Login() {
         <div className="">
           <div className="col col-login mx-auto">
             <div className="text-center">
-              <img src={require("../../assets/images/brand/logo.png")} className="header-brand-img" alt="" />
+              <img
+                src={require("../../assets/images/brand/logo.png")}
+                alt="brand-logo"
+                className="mb-3"
+                style={{
+                  width: "220px",
+                  height: "auto",
+                  objectFit: "contain",
+                }}
+              />
             </div>
           </div>
           <div className="container-login100">
@@ -62,7 +71,9 @@ export default function Login() {
                     <span className="symbol-input100">
                       <i className="zmdi zmdi-account" aria-hidden="true"></i>
                     </span>
-                    <CFormFeedback invalid>Email is required field.</CFormFeedback>
+                    <CFormFeedback invalid>
+                      Email is required field.
+                    </CFormFeedback>
                   </div>
 
                   <div className="wrap-input100 validate-input">
@@ -80,11 +91,17 @@ export default function Login() {
                     <span className="symbol-input100">
                       <i className="zmdi zmdi-lock" aria-hidden="true"></i>
                     </span>
-                    <CFormFeedback invalid>Password is required field.</CFormFeedback>
+                    <CFormFeedback invalid>
+                      Password is required field.
+                    </CFormFeedback>
                   </div>
 
                   <div className="container-login100-form-btn">
-                    <CButton color="primary" type="submit" className="login100-form-btn btn-primary">
+                    <CButton
+                      color="primary"
+                      type="submit"
+                      className="login100-form-btn btn-primary"
+                    >
                       Login
                     </CButton>
                   </div>

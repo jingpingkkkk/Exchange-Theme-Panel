@@ -63,34 +63,48 @@ export function Header() {
             onClick={() => openCloseSidebar()}
           ></Link>
           <div className="responsive-logo">
-            <Link to={`${process.env.PUBLIC_URL}/dashboard/`} className="header-logo">
-              <img
-                src={require("../../assets/images/brand/logo.png")}
-                className="mobile-logo logo-1"
-                alt="logo"
-                width="120px"
-                height="auto"
-              />
-              <img
-                src={require("../../assets/images/brand/logo.png")}
-                className="mobile-logo dark-logo-1"
-                alt="logo"
-                width="120px"
-                height="auto"
-              />
+            <Link
+              to={`${process.env.PUBLIC_URL}/dashboard/`}
+              className="header-logo"
+            >
+              <div className="d-block" style={{ width: "175px" }}>
+                <img
+                  src={require("../../assets/images/brand/logo.png")}
+                  className="mobile-logo logo-1"
+                  alt="logo"
+                  width="120px"
+                  height="auto"
+                  style={{ objectFit: "contain" }}
+                />
+                <img
+                  src={require("../../assets/images/brand/logo.png")}
+                  className="mobile-logo dark-logo-1"
+                  alt="logo"
+                  width="120px"
+                  height="auto"
+                  style={{ objectFit: "contain" }}
+                />
+              </div>
             </Link>
           </div>
-          <Link className="logo-horizontal " to={`${process.env.PUBLIC_URL}/dashboard/`}>
-            <img
-              src={require("../../assets/images/brand/logo.png")}
-              className="header-brand-img desktop-logo"
-              alt="logo"
-            />
-            <img
-              src={require("../../assets/images/brand/logo.png")}
-              className="header-brand-img light-logo1"
-              alt="logo"
-            />
+          <Link
+            className="logo-horizontal "
+            to={`${process.env.PUBLIC_URL}/dashboard/`}
+          >
+            <div className="d-block" style={{ width: "175px" }}>
+              <img
+                src={require("../../assets/images/brand/logo.png")}
+                className="header-brand-img desktop-logo"
+                alt="logo"
+                style={{ objectFit: "contain" }}
+              />
+              <img
+                src={require("../../assets/images/brand/logo.png")}
+                className="header-brand-img light-logo1"
+                alt="logo"
+                style={{ objectFit: "contain" }}
+              />
+            </div>
           </Link>
 
           <div className="d-flex order-lg-2 ms-auto header-right-icons">
@@ -103,15 +117,26 @@ export function Header() {
             </Navbar.Toggle>
 
             <div className="navbar navbar-collapse responsive-navbar p-0">
-              <Navbar.Collapse className="navbar-collapse" id="navbarSupportedContent-4">
+              <Navbar.Collapse
+                className="navbar-collapse"
+                id="navbarSupportedContent-4"
+              >
                 <div className="d-flex order-lg-2">
                   <div className="dropdown d-block d-lg-none">
-                    <Link to="#" className="nav-link icon" onClick={() => responsivesearch()}>
+                    <Link
+                      to="#"
+                      className="nav-link icon"
+                      onClick={() => responsivesearch()}
+                    >
                       <i className="fe fe-search"></i>
                     </Link>
                     <div className="dropdown-menu header-search dropdown-menu-start">
                       <div className="input-group w-100 p-2 border">
-                        <input type="text" className="form-control" placeholder="Search...." />
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Search...."
+                        />
                         <div className="input-group-text btn btn-primary">
                           <i className="fa fa-search" aria-hidden="true"></i>
                         </div>
@@ -141,12 +166,18 @@ export function Header() {
                   )} */}
 
                   <Dropdown className=" d-md-flex profile-1">
-                    <Dropdown.Toggle className="nav-link profile leading-none d-flex px-1" variant="">
+                    <Dropdown.Toggle
+                      className="nav-link profile leading-none d-flex px-1"
+                      variant=""
+                    >
                       <span>
                         {user.username} <i className=" fe fe-chevron-down"></i>
                       </span>
                     </Dropdown.Toggle>
-                    <Dropdown.Menu className="dropdown-menu-end dropdown-menu-arrow" style={{ margin: 0 }}>
+                    <Dropdown.Menu
+                      className="dropdown-menu-end dropdown-menu-arrow"
+                      style={{ margin: 0 }}
+                    >
                       <div className="drop-heading">
                         <div className="text-center">
                           <h5 className="text-dark mb-0">{user.username}</h5>
@@ -154,11 +185,15 @@ export function Header() {
                         </div>
                       </div>
                       <div className="dropdown-divider m-0"></div>
-                      <Dropdown.Item href={`${process.env.PUBLIC_URL}/pages/profile/`}>
+                      <Dropdown.Item
+                        href={`${process.env.PUBLIC_URL}/pages/profile/`}
+                      >
                         <i className="dropdown-icon fe fe-user"></i> Profile
                       </Dropdown.Item>
 
-                      <Dropdown.Item href={`${process.env.PUBLIC_URL}/pages/mailCompose/`}>
+                      <Dropdown.Item
+                        href={`${process.env.PUBLIC_URL}/pages/mailCompose/`}
+                      >
                         <i className="dropdown-icon fe fe-settings"></i>
                         Settings
                       </Dropdown.Item>
