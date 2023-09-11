@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }) => {
       password: password,
     });
     if (result.success) {
-      console.log(result)
+      console.log(result);
       localStorage.setItem("user_info", JSON.stringify(result.data.user));
       localStorage.setItem("jws_token", result.data.token);
       setIsAuthenticated(true);
@@ -72,12 +72,18 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     setIsAuthenticated(false);
-    localStorage.removeItem("user_info");
+    const drf = localStorage.getItem("dfr_buf");
+    const frr = localStorage.getItem("frr_buf");
     localStorage.clear();
+    localStorage.setItem("dfr_buf", drf);
+    localStorage.setItem("frr_buf", frr);
+    window.location.reload();
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout, loginError, resetPassword }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, login, logout, loginError, resetPassword }}
+    >
       {children}
     </AuthContext.Provider>
   );
