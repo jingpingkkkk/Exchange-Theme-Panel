@@ -1,20 +1,20 @@
-import { CButton, CCol, CForm, CSpinner, CFormLabel } from "@coreui/react";
+import { CButton, CCol, CForm, CFormLabel, CSpinner } from "@coreui/react";
 import { useFormik } from "formik";
 import React, { useEffect, useState } from "react";
 import { Card } from "react-bootstrap";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useDropzone } from "react-dropzone";
+import { useLocation, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import FormInput from "../../../components/Common/FormComponents/FormInput"; // Import the FormInput component
 import FormInputWithIcon from "../../../components/Common/FormComponents/FormInputWithIcon";
+import FormTextarea from "../../../components/Common/FormComponents/FormTextarea";
+import { Notify } from "../../../utils/notify";
+import "../themeSettingForm.css";
 import {
   getThemeSettingById,
-  updateThemeSetting,
   removeImage,
+  updateThemeSetting,
 } from "../themeSettingService";
-import FormTextarea from "../../../components/Common/FormComponents/FormTextarea";
-import { useDropzone } from "react-dropzone";
-import "../themeSettingForm.css";
-import { Notify } from "../../../utils/notify";
 
 const validationSchemaForCreate = Yup.object({
   facebookLink: Yup.string().required("Facebook is required"),
@@ -38,7 +38,8 @@ const validationSchemaForUpdate = Yup.object({
 export default function ThemeSettingForm() {
   const navigate = useNavigate();
   const location = useLocation();
-  const userId = JSON.parse(localStorage.getItem("user_info"))._id || {};
+  const userId =
+    JSON.parse(localStorage.getItem("user_info")).superUserId || {};
   //const id = location.state ? location.state.id : null;
 
   const editMode = !!userId;
@@ -152,7 +153,7 @@ export default function ThemeSettingForm() {
       }
 
       let response = await updateThemeSetting(formData);
-      if (response.data.success) {
+      if (response.success) {
         Notify.success("Theme setting updated successfully.");
         fetchAndUpdateFormData();
         //setServerMsg('Data Updated successfully!!');
@@ -171,8 +172,7 @@ export default function ThemeSettingForm() {
     Promise.all([getThemeSettingById(userId)]).then((results) => {
       const [fetchtedUser] = results;
       console.log(fetchtedUser);
-      if (fetchtedUser.length > 0 && fetchtedUser !== null) {
-        console.log("inn");
+      if (fetchtedUser) {
         const result = fetchtedUser;
         formik.setValues((prevValues) => ({
           ...prevValues,
