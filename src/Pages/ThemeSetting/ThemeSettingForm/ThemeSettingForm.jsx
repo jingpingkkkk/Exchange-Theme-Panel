@@ -171,7 +171,6 @@ export default function ThemeSettingForm() {
   const fetchAndUpdateFormData = async () => {
     Promise.all([getThemeSettingById(userId)]).then((results) => {
       const [fetchtedUser] = results;
-      console.log(fetchtedUser);
       if (fetchtedUser) {
         const result = fetchtedUser;
         formik.setValues((prevValues) => ({
