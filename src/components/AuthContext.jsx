@@ -30,6 +30,7 @@ export const AuthProvider = ({ children }) => {
       username: username,
       password: password,
     });
+    console.log(result);
     if (result.success) {
       console.log(result);
       localStorage.setItem("user_info", JSON.stringify(result.data.user));
@@ -45,19 +46,7 @@ export const AuthProvider = ({ children }) => {
 
   const resetPassword = async (request, token) => {
     setLoading(true);
-
-    const response = await fetch(`${BaseURL}/auth/resetPassword`, {
-      method: "POST",
-      mode: "cors",
-      headers: {
-        Authorization: token,
-        "Content-Type": "application/json; charset=utf-8",
-        Accept: "application/json",
-      },
-      body: JSON.stringify(request),
-    });
-
-    const result = await response.json();
+    const result = await postData("auth/resetPassword", request);
     if (result.success) {
       localStorage.setItem("user_info", JSON.stringify(result.data));
       localStorage.setItem("jws_token", token);
