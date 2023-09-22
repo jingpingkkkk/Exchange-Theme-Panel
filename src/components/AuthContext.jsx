@@ -37,7 +37,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("jws_token", result.data.token);
       setIsAuthenticated(true);
       setLoginError("");
-      navigate("/dashboard");
+      navigate("/theme-setting/");
     } else {
       setLoginError(result.message);
     }
