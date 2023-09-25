@@ -34,6 +34,7 @@ const validationSchemaForUpdate = Yup.object({
   forgotPasswordLink: Yup.string().required("Forgot password link is required"),
   depositePopupNumber: Yup.string().required("Deposite popup number"),
   welcomeMessage: Yup.string(),
+  welcomeMessageMobile: Yup.string(),
 });
 
 export default function ThemeSettingForm() {
@@ -72,6 +73,7 @@ export default function ThemeSettingForm() {
     forgotPasswordLink: "",
     depositePopupNumber: "",
     welcomeMessage: "",
+    welcomeMessageMobile: "",
   };
   const handleImageUpload = (acceptedFiles) => {
     //setImageFiles(acceptedFiles);
@@ -188,6 +190,7 @@ export default function ThemeSettingForm() {
           forgotPasswordLink: result.forgotPasswordLink || "",
           depositePopupNumber: result.depositePopupNumber || "",
           welcomeMessage: result.welcomeMessage || "",
+          welcomeMessageMobile: result.welcomeMessageMobile || "",
         }));
 
         setImageFiles(fetchtedUser.bannerImages);
@@ -384,13 +387,14 @@ export default function ThemeSettingForm() {
 
             <FormInput
               label="Welcome Desktop Image Title"
-              name="welcomeMessage"
+              name="welcomeMessageMobile"
               type="text"
-              value={formik.values.welcomeMessage}
+              value={formik.values.welcomeMessageMobile}
               onChange={formik.handleChange}
               // onBlur={formik.handleBlur}
               error={
-                formik.touched.welcomeMessage && formik.errors.welcomeMessage
+                formik.touched.welcomeMessageMobile &&
+                formik.errors.welcomeMessage
               }
               isRequired={true}
               width={4}
