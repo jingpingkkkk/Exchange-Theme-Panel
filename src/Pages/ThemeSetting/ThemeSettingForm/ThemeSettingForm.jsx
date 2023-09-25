@@ -33,7 +33,8 @@ const validationSchemaForUpdate = Yup.object({
   supportNumber: Yup.string().required("Support number is required"),
   forgotPasswordLink: Yup.string().required("Forgot password link is required"),
   depositePopupNumber: Yup.string().required("Deposite popup number"),
-  welcomeMessage: Yup.string()
+  welcomeMessage: Yup.string(),
+  welcomeMessageMobile: Yup.string(),
 });
 
 export default function ThemeSettingForm() {
@@ -72,7 +73,7 @@ export default function ThemeSettingForm() {
     forgotPasswordLink: "",
     depositePopupNumber: "",
     welcomeMessage: "",
-
+    welcomeMessageMobile: "",
   };
   const handleImageUpload = (acceptedFiles) => {
     //setImageFiles(acceptedFiles);
@@ -189,7 +190,7 @@ export default function ThemeSettingForm() {
           forgotPasswordLink: result.forgotPasswordLink || "",
           depositePopupNumber: result.depositePopupNumber || "",
           welcomeMessage: result.welcomeMessage || "",
-       
+          welcomeMessageMobile: result.welcomeMessageMobile || "",
         }));
 
         setImageFiles(fetchtedUser.bannerImages);
@@ -327,20 +328,42 @@ export default function ThemeSettingForm() {
               width={4}
               icon="fa fa-feed"
             />
+
+            <CCol md={8} />
+
+            <CCol md="4">
+              <CFormLabel htmlFor="">Logo</CFormLabel>
+              <input
+                type="file"
+                accept="image/*"
+                className="form-control"
+                onChange={(event) => handleSingleImageUpload(event, "logo")}
+              />
+            </CCol>
+            <CCol md="2">
+              {logoImageUrl && (
+                <div className="image-preview">
+                  <img src={logoImageUrl} alt="Logo" />
+                </div>
+              )}
+            </CCol>
+            <CCol md={6} />
+
             <FormInput
-              label="Welcome Image Title"
+              label="Welcome Desktop Image Title"
               name="welcomeMessage"
               type="text"
               value={formik.values.welcomeMessage}
               onChange={formik.handleChange}
               // onBlur={formik.handleBlur}
-              error={formik.touched.welcomeMessage && formik.errors.welcomeMessage}
+              error={
+                formik.touched.welcomeMessage && formik.errors.welcomeMessage
+              }
               isRequired={true}
               width={4}
-              
             />
 
-            <CCol md="2">
+            <CCol md="3">
               <CFormLabel htmlFor="">Welcome Mobile Image</CFormLabel>
               <input
                 type="file"
@@ -351,6 +374,7 @@ export default function ThemeSettingForm() {
                 }
               />
             </CCol>
+
             <CCol md="2">
               {welcomeMobileImageUrl && (
                 <div className="image-preview">
@@ -359,7 +383,24 @@ export default function ThemeSettingForm() {
               )}
             </CCol>
 
-            <CCol md="2">
+            <CCol md={3} />
+
+            <FormInput
+              label="Welcome Desktop Image Title"
+              name="welcomeMessageMobile"
+              type="text"
+              value={formik.values.welcomeMessageMobile}
+              onChange={formik.handleChange}
+              // onBlur={formik.handleBlur}
+              error={
+                formik.touched.welcomeMessageMobile &&
+                formik.errors.welcomeMessage
+              }
+              isRequired={true}
+              width={4}
+            />
+
+            <CCol md="3">
               <CFormLabel htmlFor="">Welcome Desktop Image</CFormLabel>
               <input
                 type="file"
@@ -374,23 +415,6 @@ export default function ThemeSettingForm() {
               {welcomeDesktopImageUrl && (
                 <div className="image-preview">
                   <img src={welcomeDesktopImageUrl} alt="Welcome Desktop" />
-                </div>
-              )}
-            </CCol>
-
-            <CCol md="2">
-              <CFormLabel htmlFor="">Logo</CFormLabel>
-              <input
-                type="file"
-                accept="image/*"
-                className="form-control"
-                onChange={(event) => handleSingleImageUpload(event, "logo")}
-              />
-            </CCol>
-            <CCol md="2">
-              {logoImageUrl && (
-                <div className="image-preview">
-                  <img src={logoImageUrl} alt="Logo" />
                 </div>
               )}
             </CCol>
