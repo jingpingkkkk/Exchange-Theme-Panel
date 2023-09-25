@@ -1,6 +1,6 @@
-import React, { Fragment, useState, useEffect } from "react";
-import { Link, NavLink, useLocation } from "react-router-dom";
+import React, { Fragment, useEffect, useState } from "react";
 import Scrollbars from "react-custom-scrollbars";
+import { Link, NavLink, useLocation } from "react-router-dom";
 
 const Sidebar = () => {
   const location = useLocation(); // Get the current location
@@ -9,24 +9,22 @@ const Sidebar = () => {
 
   useEffect(() => {
     setMainMenu(getMenuItems(userRole));
-
   }, []);
 
   const getMenuItems = (userRole) => {
-
     let menuItems = [
-      {
-        menutitle: "MAIN",
-        Items: [
-          {
-            path: `${process.env.PUBLIC_URL}/dashboard`,
-            icon: "home",
-            type: "link",
-            active: true,
-            title: "Dashboard",
-          },
-        ],
-      },
+      // {
+      //   menutitle: "MAIN",
+      //   Items: [
+      //     {
+      //       path: `${process.env.PUBLIC_URL}/dashboard`,
+      //       icon: "home",
+      //       type: "link",
+      //       active: true,
+      //       title: "Dashboard",
+      //     },
+      //   ],
+      // },
       {
         menutitle: "THEME SETTING",
         Items: [
@@ -39,7 +37,6 @@ const Sidebar = () => {
           },
         ],
       },
-
     ];
 
     return menuItems;
@@ -50,7 +47,6 @@ const Sidebar = () => {
     const currentPath = location.pathname; // Get the current path
 
     mainmenu.map((items) => {
-
       items.Items.filter((Items) => {
         if (currentPath.includes(Items.path)) {
           Items.active = true;
@@ -90,10 +86,7 @@ const Sidebar = () => {
         }
         if (Items.children) {
           Items.children.filter((submenuItems) => {
-            if (
-              submenuItems.children &&
-              submenuItems.children.includes(item)
-            ) {
+            if (submenuItems.children && submenuItems.children.includes(item)) {
               Items.active = true;
               submenuItems.active = true;
               return true;
@@ -148,7 +141,10 @@ const Sidebar = () => {
       <aside className="app-sidebar">
         <Scrollbars>
           <div className="header side-header">
-            <Link to={`${process.env.PUBLIC_URL}/dashboard/`} className="header-brand1">
+            <Link
+              to={`${process.env.PUBLIC_URL}/dashboard/`}
+              className="header-brand1"
+            >
               <img
                 src={require("../../assets/images/brand/logo.png")}
                 className="header-brand-img desktop-logo"
@@ -202,20 +198,28 @@ const Sidebar = () => {
                   </li>
                   {Item.Items.map((menuItem, i) => (
                     <li
-                      className={`slide ${menuItem.active ? "is-expanded" : ""}`}
+                      className={`slide ${
+                        menuItem.active ? "is-expanded" : ""
+                      }`}
                       key={i}
                     >
                       {menuItem.type === "link" ? (
                         <NavLink
                           to={menuItem.path + "/"}
-                          className={`side-menu__item ${menuItem.active ? "active" : ""}`}
+                          className={`side-menu__item ${
+                            menuItem.active ? "active" : ""
+                          }`}
                           onClick={() => {
                             setNavActive(menuItem);
                             toggletNavActive(menuItem);
                           }}
                         >
-                          <i className={`side-menu__icon fe fe-${menuItem.icon}`}></i>
-                          <span className="side-menu__label">{menuItem.title}</span>
+                          <i
+                            className={`side-menu__icon fe fe-${menuItem.icon}`}
+                          ></i>
+                          <span className="side-menu__label">
+                            {menuItem.title}
+                          </span>
                           {menuItem.badge ? (
                             <label className={`${menuItem.badge} side-badge`}>
                               {menuItem.badgetxt}
@@ -231,14 +235,20 @@ const Sidebar = () => {
                       {menuItem.type === "sub" ? (
                         <NavLink
                           to={menuItem.path + "/"}
-                          className={`side-menu__item ${menuItem.active ? "active" : ""}`}
+                          className={`side-menu__item ${
+                            menuItem.active ? "active" : ""
+                          }`}
                           onClick={(event) => {
                             event.preventDefault();
                             setNavActive(menuItem);
                           }}
                         >
-                          <i className={`side-menu__icon fe fe-${menuItem.icon}`}></i>
-                          <span className="side-menu__label">{menuItem.title}</span>
+                          <i
+                            className={`side-menu__icon fe fe-${menuItem.icon}`}
+                          ></i>
+                          <span className="side-menu__label">
+                            {menuItem.title}
+                          </span>
                           {menuItem.badge ? (
                             <label className={`${menuItem.badge} side-badge`}>
                               {menuItem.badgetxt}
@@ -246,7 +256,9 @@ const Sidebar = () => {
                           ) : (
                             ""
                           )}
-                          <i className={`${menuItem.background} fa angle fa-angle-right `}></i>
+                          <i
+                            className={`${menuItem.background} fa angle fa-angle-right `}
+                          ></i>
                         </NavLink>
                       ) : (
                         ""
@@ -257,10 +269,10 @@ const Sidebar = () => {
                           style={
                             menuItem.active
                               ? {
-                                opacity: 1,
-                                transition: "opacity 500ms ease-in",
-                                display: "block",
-                              }
+                                  opacity: 1,
+                                  transition: "opacity 500ms ease-in",
+                                  display: "block",
+                                }
                               : { display: "none" }
                           }
                         >
@@ -292,7 +304,9 @@ const Sidebar = () => {
                                   <NavLink
                                     to={childrenItem.path + "/"}
                                     className="slide-item"
-                                    onClick={() => toggletNavActive(childrenItem)}
+                                    onClick={() =>
+                                      toggletNavActive(childrenItem)
+                                    }
                                   >
                                     {childrenItem.title}
                                   </NavLink>
@@ -316,7 +330,9 @@ const Sidebar = () => {
                                               to={childrenSubItem.path + "/"}
                                               className={`${"sub-slide-item"}`}
                                               onClick={() =>
-                                                toggletNavActive(childrenSubItem)
+                                                toggletNavActive(
+                                                  childrenSubItem
+                                                )
                                               }
                                             >
                                               {childrenSubItem.title}
