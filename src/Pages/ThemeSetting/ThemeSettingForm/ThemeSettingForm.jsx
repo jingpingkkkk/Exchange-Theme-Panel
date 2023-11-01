@@ -427,7 +427,7 @@ export default function ThemeSettingForm() {
               </div>
 
               <div className="image-preview-container mt-2">
-                {imageFiles.map((fileObj, index) => (
+                {imageFiles?.map((fileObj, index) => (
                   <div key={index} className="image-preview">
                     <img src={fileObj.url} alt={`Uploaded ${index + 1}`} />
                     <div className="image-overlay">

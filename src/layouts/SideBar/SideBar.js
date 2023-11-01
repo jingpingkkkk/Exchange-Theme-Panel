@@ -37,6 +37,18 @@ const Sidebar = () => {
           },
         ],
       },
+      {
+        menutitle: "PROMOTION",
+        Items: [
+          {
+            path: `${process.env.PUBLIC_URL}/promotion-list`,
+            icon: "grid",
+            type: "link",
+            active: false,
+            title: "Promotion",
+          },
+        ],
+      },
     ];
 
     return menuItems;
@@ -198,17 +210,15 @@ const Sidebar = () => {
                   </li>
                   {Item.Items.map((menuItem, i) => (
                     <li
-                      className={`slide ${
-                        menuItem.active ? "is-expanded" : ""
-                      }`}
+                      className={`slide ${menuItem.active ? "is-expanded" : ""
+                        }`}
                       key={i}
                     >
                       {menuItem.type === "link" ? (
                         <NavLink
                           to={menuItem.path + "/"}
-                          className={`side-menu__item ${
-                            menuItem.active ? "active" : ""
-                          }`}
+                          className={`side-menu__item ${menuItem.active ? "active" : ""
+                            }`}
                           onClick={() => {
                             setNavActive(menuItem);
                             toggletNavActive(menuItem);
@@ -235,9 +245,8 @@ const Sidebar = () => {
                       {menuItem.type === "sub" ? (
                         <NavLink
                           to={menuItem.path + "/"}
-                          className={`side-menu__item ${
-                            menuItem.active ? "active" : ""
-                          }`}
+                          className={`side-menu__item ${menuItem.active ? "active" : ""
+                            }`}
                           onClick={(event) => {
                             event.preventDefault();
                             setNavActive(menuItem);
@@ -269,10 +278,10 @@ const Sidebar = () => {
                           style={
                             menuItem.active
                               ? {
-                                  opacity: 1,
-                                  transition: "opacity 500ms ease-in",
-                                  display: "block",
-                                }
+                                opacity: 1,
+                                transition: "opacity 500ms ease-in",
+                                display: "block",
+                              }
                               : { display: "none" }
                           }
                         >

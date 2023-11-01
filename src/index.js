@@ -19,6 +19,10 @@ const ThemeSettingForm = React.lazy(() =>
   import("./Pages/ThemeSetting/ThemeSettingForm/ThemeSettingForm")
 );
 
+// Promotion Module
+const PromotionList = React.lazy(() => import("./Pages/Promotion/PromotionList/PromotionList"));
+const PromotionForm = React.lazy(() => import("./Pages/Promotion/PromotionForm/PromotionForm"));
+
 //custom Pages
 const Login = React.lazy(() => import("./Pages/Login/Login"));
 const ResetPassword = React.lazy(() =>
@@ -88,6 +92,15 @@ const Root = () => {
                       path={`${process.env.PUBLIC_URL}/theme-setting`}
                       element={<ThemeSettingForm />}
                     />
+                  </Route>
+
+                  {/* Promotion route  */}
+                  <Route path="/" element={<ProtectedRoutes />}>
+                    {" "}
+                    <Route path={`${process.env.PUBLIC_URL}/promotion-form`} element={<PromotionForm />} />{" "}
+                  </Route>
+                  <Route path="/" element={<ProtectedRoutes />}>
+                    <Route path={`${process.env.PUBLIC_URL}/promotion-list`} element={<PromotionList />} />
                   </Route>
                 </Route>
               </Route>
