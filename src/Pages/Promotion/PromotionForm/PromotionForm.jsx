@@ -8,6 +8,8 @@ import FormInput from "../../../components/Common/FormComponents/FormInput"; // 
 import FormSelectWithSearch from "../../../components/Common/FormComponents/FormSelectWithSearch";
 import { Notify } from "../../../utils/notify";
 import { addPromotion, getPromotionDetailByID, updatePromotion } from "../promotionService";
+import CustomEditor from './CustomEditor';
+import { EditorState } from 'draft-js';
 
 const validationSchemaForCreate = Yup.object({
   promotionType: Yup.string().required("Promotion Type is required"),
@@ -29,8 +31,18 @@ const promotionTypes = [
   { value: "sport", label: "Sport" },
   { value: "casino", label: "Casino" },
 ];
-
 export default function PromotionForm() {
+  const [data, setData] = useState("dd");
+  const [editor1State, setEditor1State] = useState(EditorState.createEmpty());
+  const [editor2State, setEditor2State] = useState(EditorState.createEmpty());
+
+  const handleEditor1StateChange = (newEditorState) => {
+    setEditor1State(newEditorState);
+  };
+
+  const handleEditor2StateChange = (newEditorState) => {
+    setEditor2State(newEditorState);
+  };
   const navigate = useNavigate();
   const location = useLocation();
   const userId =
@@ -88,6 +100,8 @@ export default function PromotionForm() {
       const [fetchtedUser] = results;
       if (fetchtedUser !== null) {
         const result = fetchtedUser;
+        setData(result.description);
+        console.log(result.description);
         formik.setValues((prevValues) => ({
           ...prevValues,
           title: result.title || "",
@@ -165,6 +179,11 @@ export default function PromotionForm() {
               error={formik.touched.description && formik.errors.description}
               width={12}
               isRequired="true"
+            />
+
+            <CustomEditor
+              initialValue={data}
+              onEditorStateChange={handleEditor1StateChange}
             />
 
             <FormInput
